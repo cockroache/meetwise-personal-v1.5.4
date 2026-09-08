@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0d1717" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Meetwise — Meeting Intelligence</title>
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div id="toast" class="toast"></div>
+
+  <section id="setupView" class="auth-shell hidden">
+    <div class="auth-card">
+      <div class="brand-lockup"><div class="brand-mark">M</div><div><b>MEETWISE</b><span>Meeting Intelligence</span></div></div>
+      <p class="eyebrow">FIRST-TIME SETUP</p>
+      <h1>Create your private Admin access</h1>
+      <p class="muted">This personal version stores your local session and meeting index on this device. You can add cloud AI keys later.</p>
+      <label>Admin password<input id="setupPassword" type="password" minlength="6" placeholder="Minimum 6 characters" /></label>
+      <label>Confirm password<input id="setupPassword2" type="password" minlength="6" placeholder="Repeat password" /></label>
+      <button id="createAdminBtn" class="primary full">Create Admin</button>
+    </div>
+  </section>
+
+  <section id="loginView" class="auth-shell">
+    <div class="auth-card">
+      <div class="brand-lockup"><div class="brand-mark">M</div><div><b>MEETWISE</b><span>Meeting Intelligence</span></div></div>
+      <p class="eyebrow">PRIVATE WORKSPACE</p>
+      <h1>Sign in</h1>
+      <div class="segmented"><button class="active" data-login-role="ADMIN">Admin</button><button data-login-role="GUEST">Guest</button></div>
+      <label>Password<input id="loginPassword" type="password" placeholder="Enter password" /></label>
+      <button id="loginBtn" class="primary full">Open workspace</button>
+      <p id="guestDisabledMsg" class="tiny muted hidden">Guest access is currently disabled.</p>
+    </div>
+  </section>
+
+  <div id="appView" class="app hidden">
+    <aside class="sidebar">
+      <div class="brand-lockup"><div class="brand-mark">M</div><div><b>MEETWISE</b><span>Meeting Intelligence</span></div></div>
+      <nav>
+        <button class="nav-btn active" data-page="home"><span>⌂</span> Home</button>
+        <button class="nav-btn" data-page="meetings"><span>▤</span> Meetings</button>
+        <button class="nav-btn" data-page="tasks"><span>✓</span> Tasks</button>
+        <button class="nav-btn" data-page="reports"><span>▣</span> Reports</button>
+        <button class="nav-btn admin-only" data-page="settings"><span>⚙</span> Settings</button>
+      </nav>
+      <div class="sidebar-foot"><span id="roleBadge" class="pill"></span><button id="logoutBtn" class="ghost">Sign out</button></div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div><p class="eyebrow">MEETING INTELLIGENCE</p><h2 id="pageTitle">Workspace</h2></div>
+        <div class="top-actions"><button id="installBtn" class="ghost hidden">Install App</button><button id="newMeetingTopBtn" class="primary">+ New meeting</button></div>
+      </header>
+
+      <section id="homePage" class="page">
+        <div class="hero">
+          <div>
+            <span class="status-dot"><i></i> Ready for your next meeting</span>
+            <h1>Turn conversations into<br><em>decisions that stay visible.</em></h1>
+            <p>Record live, upload a meeting, or paste text. Meetwise turns it into a structured Standard Report in Burmese or English.</p>
+          </div>
+          <div class="hero-stat"><strong id="meetingCount">0</strong><span>saved meetings</span><strong id="openTaskCount">0</strong><span>open actions</span></div>
+        </div>
+
+        <div class="input-grid">
+          <button class="source-card live" data-source="live"><span class="source-icon">●</span><b>Start Live Meeting</b><small>Long Meeting Mode • progressive transcription</small></button>
+          <button class="source-card" data-source="file"><span class="source-icon">⇧</span><b>Upload Recording</b><small>Audio / video file</small></button>
+          <button class="source-card" data-source="text"><span class="source-icon">T</span><b>Paste Text</b><small>Minutes, notes, transcript</small></button>
+        </div>
+
+        <div class="section-head"><div><p class="eyebrow">MEMORY</p><h3>Recent meetings</h3></div><div class="search-wrap"><input id="quickSearch" placeholder="Search meetings…" /></div></div>
+        <div id="recentMeetings" class="meeting-list"></div>
+      </section>
+
+      <section id="meetingsPage" class="page hidden"><div class="section-head"><div><p class="eyebrow">ARCHIVE</p><h3>Meetings</h3></div><input id="meetingSearch" class="compact-input" placeholder="Search title or content" /></div><div id="allMeetings" class="meeting-list"></div></section>
+      <section id="tasksPage" class="page hidden"><div class="section-head"><div><p class="eyebrow">FOLLOW-UP</p><h3>Action register</h3></div><select id="taskFilter" class="compact-input"><option value="open">Open</option><option value="all">All</option><option value="done">Completed</option></select></div><div id="taskList" class="task-list"></div></section>
+      <section id="reportsPage" class="page hidden"><div class="section-head"><div><p class="eyebrow">FINAL OUTPUT</p><h3>Reports</h3></div></div><div id="reportList" class="meeting-list"></div></section>
+
+      <section id="settingsPage" class="page hidden admin-only">
+        <div class="settings-grid">
+          <div class="panel"><p class="eyebrow">AI CONNECTION</p><h3>Private API settings</h3><p class="muted">Keys are not written into the app source. For the safest setup, add them later as Vercel environment variables. Personal-device keys are available as a fallback.</p>
+            <label>Groq API Key (speech-to-text)<input id="groqKey" type="password" placeholder="gsk_…" /></label>
+            <label>Gemini API Key (report generation)<input id="geminiKey" type="password" placeholder="AIza…" /></label>
+            <button id="saveKeysBtn" class="secondary">Save on this device</button>
+          </div>
+          <div class="panel"><p class="eyebrow">ACCESS</p><h3>Guest control</h3><label class="switch-line"><span><b>Enable Guest</b><small>Can create meetings and view permitted reports</small></span><input id="guestEnabled" type="checkbox" /></label><label>Guest password<input id="guestPassword" type="password" placeholder="Set / replace password" /></label><button id="saveGuestBtn" class="secondary">Save Guest Settings</button></div>
+          <div class="panel"><p class="eyebrow">MEMORY</p><h3>Recent list size</h3><label>Recent meetings<select id="recentLimit"><option>10</option><option selected>20</option><option>50</option></select></label><p class="muted tiny">Meetings remain searchable even when they no longer appear in Recent.</p><button id="savePrefsBtn" class="secondary">Save preference</button></div>
+          <div class="panel danger-zone"><p class="eyebrow">DEVICE DATA</p><h3>Local backup</h3><p class="muted">Export the local meeting index, reports, and tasks as JSON. Raw recordings are not included.</p><button id="backupBtn" class="secondary">Export Backup</button></div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="mobile-nav"><button class="mobile-nav-btn active" data-page="home">⌂<span>Home</span></button><button class="mobile-nav-btn" data-page="meetings">▤<span>Meetings</span></button><button id="mobileNewBtn" class="mobile-new">+</button><button class="mobile-nav-btn" data-page="tasks">✓<span>Tasks</span></button><button class="mobile-nav-btn" data-page="reports">▣<span>Reports</span></button></nav>
+  </div>
+
+  <div id="meetingModal" class="modal hidden">
+    <div class="modal-card wide">
+      <button class="modal-x" data-close="meetingModal">×</button>
+      <div class="modal-title"><p class="eyebrow">NEW MEETING</p><h2 id="modalHeading">Start Live Meeting</h2></div>
+      <div id="sourceTabs" class="segmented"><button class="active" data-modal-source="live">Live</button><button data-modal-source="file">File</button><button data-modal-source="text">Text</button></div>
+
+      <div class="form-row"><label>Meeting title<input id="meetingTitleInput" placeholder="Leave blank for automatic title" /></label><label>Output Report Language<select id="reportLanguage"><option value="my">Burmese</option><option value="en">English</option></select></label><label>Source Language<select id="sourceLanguage"><option value="auto">Auto detect</option><option value="my">Burmese</option><option value="en">English</option></select></label><label>Recording Type<select id="recordingType"><option value="meeting">Meeting</option><option value="youtube">YouTube / Video</option><option value="lecture">Lecture</option><option value="interview">Interview</option><option value="general">General Voice</option></select></label><label>Output Detail Level<select id="outputDetailLevel"><option value="auto">Auto AI</option><option value="quick">Quick Summary</option><option value="standard" selected>Standard Report</option><option value="deep">Deep Analysis</option></select></label></div>
+      <input id="sourceFile" type="file" accept="audio/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv" class="hidden" />
+      <div id="liveInput" class="source-pane">
+        <div class="recorder-panel"><div id="recIndicator" class="record-orb"><span>●</span></div><div id="recordTime" class="record-time">00:00:00</div><p id="recordStatus" class="muted">Ready for a long meeting. Audio is saved in 60-second local chunks and transcribed progressively.</p><div class="rec-controls"><button id="startRecBtn" class="primary">Start long meeting</button><button id="markBtn" class="secondary" disabled>★ Mark important</button><button id="finishRecBtn" class="danger hidden">Finish meeting</button></div><div id="markerList" class="marker-list"></div></div>
+      </div>
+      <div id="fileInputPane" class="source-pane hidden"><div id="dropZone" class="drop-zone"><b>Drag & drop or choose a file</b><span>Audio / Video / PDF / DOCX / XLS/XLSX / PPTX / TXT / CSV</span><button id="chooseFileBtn" class="secondary">Choose file</button><small id="selectedFileName"></small><small class="muted tiny">Direct server processing limit: about 4 MB per file in this preview. TXT/CSV are read locally.</small></div></div>
+      <div id="textInputPane" class="source-pane hidden"><label>Meeting notes / transcript<textarea id="textSource" rows="12" placeholder="Paste the full notes or transcript here…"></textarea></label></div>
+
+      <div class="modal-footer"><div><span class="pill">AI Report</span><span class="muted tiny">Choose output language and detail level for every input</span></div><button id="processMeetingBtn" class="primary">Generate AI Report</button></div>
+      <div id="processingBox" class="processing hidden"><div class="spinner"></div><div><b id="processingTitle">Processing meeting…</b><p id="processingDetail">Preparing source</p></div></div>
+    </div>
+  </div>
+
+  <div id="reportModal" class="modal hidden"><div class="modal-card report-card"><button class="modal-x" data-close="reportModal">×</button><div class="report-toolbar"><div><p class="eyebrow">STANDARD REPORT</p><h2 id="reportTitle"></h2></div><div class="toolbar-buttons"><button id="txtBtn" class="ghost">TXT</button><button id="wordBtn" class="ghost">Word</button><button id="pdfBtn" class="ghost">PDF / Print</button><button id="saveEditedBtn" class="primary">Save edits</button></div></div><div id="reportEditor" class="report-editor" contenteditable="true"></div></div></div>
+
+  <script src="/app.js?v=1.5.4"></script>
+<div id="buildVersion" style="position:fixed;right:8px;bottom:6px;font-size:10px;opacity:.45;pointer-events:none">V1.5.4</div>
+</body>
+</html>
